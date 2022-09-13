@@ -179,7 +179,7 @@ end
 -- buff == buff gained or lost
 -- gain == true if the buff was gained, false if it was lost.
 function job_buff_change(buff, gain)	
-	if buff:contains("Aftermath") or T{'haste', 'march', 'mighty guard', 'embrava', 'geo-haste', 'indi-haste'}:contains(buff:lower()) then
+	if buff:contains("Aftermath") or T{'haste', 'march', 'mighty guard', 'embrava', 'geo-haste', 'indi-haste', 'haste samba'}:contains(buff:lower()) then
 		get_combat_form()
 		if not midaction() then
 			handle_equipping_gear(player.status)

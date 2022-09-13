@@ -111,7 +111,6 @@ function user_setup()
 	get_combat_form()
 end
 --For some reason setting the bindings in the user_setup wasn't working when gearswap first loads.
---
 function set_bindings()
 	send_command('bind ^Home gs c update user')
 	send_command('bind Home gs c SelectJug')
@@ -498,7 +497,7 @@ function init_gear_sets()
 	sets.Kiting = {feet="Skadi's Jambeaux +1"}
 	
 	-- -- Defense sets 
-	-- -- In Gearswap defense sets are equipped no matter the situation, which I don't personally like 
+	-- -- In default Mote files defense sets are equipped no matter the situation, which I don't personally like 
 	-- -- Therefore I have retooled the functionality to differentiate between engaged and idle
 	-- -- Do not fill this in or delete it
 	sets.defense = { }		
@@ -573,11 +572,11 @@ function init_gear_sets()
 	sets.engaged.NIN['MAX'].MixDT = {}	
 	sets.engaged.NIN['MAX'].PetDT = {}	
 	
-    --capped haste + samba (0 DW) [116/hit]
-	sets.engaged.NIN['MAX+Samba'] = set_combine(sets.engaged,{})
-	sets.engaged.NIN['MAX+Samba'].DT = set_combine(sets.engaged.DT,{})
-	sets.engaged.NIN['MAX+Samba'].MixDT = set_combine(sets.engaged.MixDT,{})	
-	sets.engaged.NIN['MAX+Samba'].PetDT = set_combine(sets.engaged.PetDT,{})
+    --capped haste + samba (0 DW) [116/hit] (not possible to get haset samba buff as /NIN)
+	-- sets.engaged.NIN['MAX+Samba'] = set_combine(sets.engaged,{})
+	-- sets.engaged.NIN['MAX+Samba'].DT = set_combine(sets.engaged.DT,{})
+	-- sets.engaged.NIN['MAX+Samba'].MixDT = set_combine(sets.engaged.MixDT,{})	
+	-- sets.engaged.NIN['MAX+Samba'].PetDT = set_combine(sets.engaged.PetDT,{})
 	
 	-----------------------------------------------DANCER SUB----------------------------------------------------
 
