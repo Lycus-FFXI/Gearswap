@@ -481,7 +481,7 @@ function fill_keybind_strings()
 	keybinds_on['keybind_reward'] = add_color(' (End)', const_text_blue)
 
 	keybinds_on['pet_header'] = add_color('================== Pet =================', const_text_header)
-	keybinds_on['pet_info_header']= add_color(')============== Pet Settings ==============', const_text_header)
+	keybinds_on['pet_info_header']= add_color('============== Pet Settings ==============', const_text_header)
 
 --[[
     This gets passed in when the Keybinds are turned off.

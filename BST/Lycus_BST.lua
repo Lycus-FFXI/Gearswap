@@ -96,7 +96,7 @@ function user_setup()
 	
 	--HUD Specific states
 	state.ShowUI = M(true, 'HUD')
-	state.ShowUIHotkeys = M(false)
+	state.ShowUIHotkeys = M(false, 'Show Hotkeys')
 
 	select_default_macro_book(1, 10)
 	
