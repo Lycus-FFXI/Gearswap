@@ -198,10 +198,14 @@ Pets = T{
 		['Jug']='Heavenly Broth',
 		['Charges']={[1]=1,[2]=2},
 		['Type']='Vermin', ['Family']='Mosquito'},
+	['Fatso Fargann'] = T{
+		['Jug']='C. Plasma Broth',
+		['Charges']= {[1]=1,[2]=1,[3]=2,[4]=3},
+		['Type']='Amorph', ['Family']='Leech'},
 	['BraveHeroGlenn'] = T{
 		['Jug']='Wispy Broth',
 		['Charges']={},
-		['Type']='Aquan', ['Family']='Frog'}		
+		['Type']='Aquan', ['Family']='Frog'}
 }
 
 --So I don't have to define each and every correlation for each Pet
@@ -284,5 +288,6 @@ JugInfo = T{
 	['Feculent Broth']='Daring Roland',
 	['Wetland Broth']='Mosquito Familiar',
 	['Heavenly Broth']='Left-Handed Yoko',
-	['Wispy Broth']='Brave Hero Glenn'
+	['Wispy Broth']='Brave Hero Glenn',
+	['C. Plasma Broth']='Fatso Fargann'
 }

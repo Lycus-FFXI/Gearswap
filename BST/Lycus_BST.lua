@@ -662,10 +662,10 @@ function init_gear_sets()
 	sets.engaged.NIN['MAX'].AM3.PetDT = {}
 	
     --capped haste + samba (0 DW)	
-	sets.engaged.NIN['MAX+Samba'].AM3 = set_combine(sets.engaged.NIN['MAX+Samba'],
-		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
-		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.NIN['MAX+Samba'].AM3.PetDT = {}
+	-- sets.engaged.NIN['MAX+Samba'].AM3 = set_combine(sets.engaged.NIN['MAX+Samba'],
+		-- {ammo='Aurgelmir Orb +1', body='Malignance Tabard',
+		-- rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
+	-- sets.engaged.NIN['MAX+Samba'].AM3.PetDT = {}
 	
 	--0% haste | max dual wield (59 DW)
 	sets.engaged.DNC.AM3 = {}
