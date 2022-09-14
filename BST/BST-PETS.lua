@@ -205,7 +205,71 @@ Pets = T{
 	['BraveHeroGlenn'] = T{
 		['Jug']='Wispy Broth',
 		['Charges']={},
-		['Type']='Aquan', ['Family']='Frog'}
+		['Type']='Aquan', ['Family']='Frog'},
+	['DapperMac'] = T{
+		['Jug']='Briny Broth',
+		['Charges']={[1]=2,[2]=1},
+		['Type']='Bird', ['Family']='Apkallu'},
+	['CraftyClyvonne'] = T{
+		['Jug']='Cng. Brain Broth',
+		['Charges']={[1]=1,[2]=2},
+		['Type']='Beast', ['Family']='Coeurl'},
+	['NurseryNazuna'] = T{
+		['Jug']='D. Herbal Broth',
+		['Charges']={[1]=1,[2]=2,[3]=1,[4]=2},
+		['Type']='Beast', ['Family']='Sheep'},
+	['LuckyLulush'] = T{
+		['Jug']='L. Carrot Broth',
+		['Charges']={[1]=1,[2]=1,[3]=1,[4]=2},
+		['Type']='Beast', ['Family']='Rabbit'},
+	['FlowerpotMerle'] = T{
+		['Jug']='Vermihumus',
+		['Charges']={[1]=1,[2]=1,[3]=1,[4]=1},
+		['Type']='Plantoid', ['Family']='Madragora'},
+	['DipperYuly'] = T{
+		['Jug']='Wool Grease',
+		['Charges']={[1]=1,[2]=1,[3]=2},
+		['Type']='Vermin', ['Family']='Ladybug'},
+	['DiscreetLouise'] = T{
+		['Jug']='Deepbed Soil',
+		['Charges']={[1]=1,[2]=1,[3]=2,[4]=2,[5]=2,[6]=3,[7]=3},
+		['Type']='Plantoid', ['Family']='Funguar'},
+	['Presto Julio'] = T{
+		['Jug']='C. Grass. Broth',
+		['Charges']={[1]=1,[2]=2,[3]=1},
+		['Type']='Plantoid', ['Family']='Flytrap'},
+	['Audacious Anna'] = T{
+		['Jug']='Bub. Carrion Broth',
+		['Charges']={[1]=1,[2]=1,[3]=1,[4]=1,[5]=2,[6]=1},
+		['Type']='Lizard', ['Family']='Hill Lizard'},
+	['Mailbuster Cetas'] = T{
+		['Jug']='Gob. Bug Broth',
+		['Charges']={[1]=1,[2]=1,[3]=1},
+		['Type']='Vermin', ['Family']='Fly'},
+	['FaithfulFalcorr'] = T{
+		['Jug']='Lucky Broth',
+		['Charges']={[1]=1,[2]=3,[3]=1,[4]=1,[5]=2,[6]=3},
+		['Type']='Bird', ['Family']='Hippogryph'},
+	['SwiftSieghard'] = T{
+		['Jug']='Mlw. Bird Broth',
+		['Charges']={[1]=1,[2]=1,[3]=3},
+		['Type']='Lizard', ['Family']='Raptor'},
+	['BugeyedBroncha'] = T{
+		['Jug']='Svg. Mole Broth',
+		['Charges']={[1]=1,[2]=1,[3]=1,[4]=1,[5]=1},
+		['Type']='Lizard', ['Family']='Eft'},
+	['GorefangHobs'] = T{
+		['Jug']='Bur. Carrion Broth',
+		['Charges']={[1]=2,[2]=1,[3]=1,[4]=2,[5]=2},
+		['Type']='Beast', ['Family']='Tiger'},
+	['GooeyGerard'] = T{
+		['Jug']='Cl. Wheat Broth',
+		['Charges']={[1]=2,[2]=3},
+		['Type']='Amorph', ['Family']='Slug'},
+	['CrudeRaphie'] = T{
+		['Jug']='Shadowy Broth',
+		['Charges']={[1]=1,[2]=1,[3]=3},
+		['Type']='Lizard', ['Family']='Adamantoise'}
 }
 
 --So I don't have to define each and every correlation for each Pet
@@ -289,5 +353,22 @@ JugInfo = T{
 	['Wetland Broth']='Mosquito Familiar',
 	['Heavenly Broth']='Left-Handed Yoko',
 	['Wispy Broth']='Brave Hero Glenn',
-	['C. Plasma Broth']='Fatso Fargann'
+	['Briny Broth']='Dapper Mac',
+	['Cng. Brain Broth']='Crafty Clyvonne',
+	['D. Herbal Broth']='Nursery Nazuna',
+	['L. Carrot Broth']='Lucky Lulush',
+	['Vermihumus']='Flowerpot Merle',
+	['Wool Grease']='Dipper Yuly',
+	['Deepbed Soil']='Discreet Louise',
+	['C. Plasma Broth']='Fatso Fargann',
+	['C. Grass Broth']='Presto Julio',
+	['Bub. Carrion Broth']='Audacious Anna',
+	['Gob. Bug Broth']='Mailbuster Cetas',
+	['Lucky Broth']='Faithful Falcorr',
+	['Mlw. Bird Broth']='Swift Sieghard',
+	['Rzr. Brain Broth']='Bloodclaw Shasra',
+	['Svg. Mole Broth']='Bugeyed Broncha',
+	['Bur. Carrion Broth']='Gorefang Hobs',
+	['Cl. Wheat Broth']='Gooey Gerard',
+	['Shadowy Broth']='Crude Raphie'
 }
