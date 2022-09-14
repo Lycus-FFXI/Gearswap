@@ -694,7 +694,7 @@ function init_gear_sets()
 	sets.engaged.DNC['MAX'].AM3.PetDT = {}	
 
 	--capped haste + Samba (9 DW)	
-	sets.engaged.DNC['MAX+Samba'].AM3 = set_combine(sets.engaged.NIN['MAX+Samba'],
+	sets.engaged.DNC['MAX+Samba'].AM3 = set_combine(sets.engaged,
 		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	sets.engaged.DNC['MAX+Samba'].AM3.PetDT = {}	
