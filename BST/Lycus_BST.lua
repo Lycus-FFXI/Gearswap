@@ -446,36 +446,36 @@ function init_gear_sets()
 	sets.engaged.DW = {}
 	
 	--/DNC 0% haste | /DNC 0% haste + samba
-	sets.engaged.DW[59] = set_combine(sets.engaged,{ 
+	sets.engaged.DW['59'] = set_combine(sets.engaged,{ 
 		 head=Taeon.Head.DW, neck='Beastmaster Collar +2', lear='Suppanomimi', rear='Eabani Earring',
 		 body=Taeon.Body.DW, hands=Emicho.Hands.DW, 
 		 back=Artio.DW, waist='Reiki Yotai', legs=Taeon.Legs.DW, feet=Taeon.Feet.DW})
 	
 	--/NIN 0% haste | /DNC 15% haste, no samba
-	sets.engaged.DW[49] = set_combine(sets.engaged.DW[59],{body="Malignance Tabard"})
+	sets.engaged.DW['49'] = set_combine(sets.engaged.DW['59'],{body="Malignance Tabard"})
 	
 	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW[45] = set_combine(sets.engaged.DW[49],{head="Malignance Chapeau", neck="Anu Torque", body="Gleti's Cuirass"})
+	sets.engaged.DW['45'] = set_combine(sets.engaged.DW['49'],{head="Malignance Chapeau", neck="Anu Torque", body="Gleti's Cuirass"})
 	
 	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW[42] = set_combine(sets.engaged,{ 
+	sets.engaged.DW['42'] = set_combine(sets.engaged,{ 
 		 lear='Suppanomimi',rear='Sherida Earring', hands=Emicho.Hands.DW, 
 		 back=Artio.DW, waist='Reiki Yotai', legs=Taeon.Legs.DW, feet=Taeon.Feet.DW})
 		 
 	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW[35] = set_combine(sets.engaged,{ 
+	sets.engaged.DW['35'] = set_combine(sets.engaged,{ 
 		 rear='Eabani Earring', hands=Emicho.Hands.DW, 
 		 back=Artio.DW, waist='Reiki Yotai', feet=Taeon.Feet.DW})
 		 
 	--/NIN 30% haste
-	sets.engaged.DW[31] = set_combine(sets.engaged,{ 
+	sets.engaged.DW['31'] = set_combine(sets.engaged,{ 
 		hands=Emicho.Hands.DW, back=Artio.DW, waist='Reiki Yotai', feet=Taeon.Feet.DW})
 		
 	--/DNC capped haste, no samba
-	sets.engaged.DW[21] = set_combine(sets.engaged.DW[31], {back=Artio.STP})
+	sets.engaged.DW['21'] = set_combine(sets.engaged.DW['31'], {back=Artio.STP})
 	
 	--/NIN capped haste | /DNC capped haste + samba
-	sets.engaged.DW[11] = set_combine(sets.engaged,{rear='Eabani Earring', waist='Reiki Yotai'})
+	sets.engaged.DW['11'] = set_combine(sets.engaged,{rear='Eabani Earring', waist='Reiki Yotai'})
 	
 	
 	-------------------------------------------------------------------------------------------------------------------------
@@ -483,78 +483,78 @@ function init_gear_sets()
 	-------------------------------------------------------------------------------------------------------------------------	
 		
 	--/DNC no haste
-	sets.engaged.DW[59].DT = set_combine(sets.engaged.DW[59], 
+	sets.engaged.DW['59'].DT = set_combine(sets.engaged.DW['59'], 
 		{ammo='Staunch Tathlum', neck='Loricate Torque', lring='Defending Ring', rring='Moonbeam ring'})
 		
 	--/NIN no haste
-	sets.engaged.DW[49].DT = set_combine(sets.engaged.DW[49], 
+	sets.engaged.DW['49'].DT = set_combine(sets.engaged.DW['49'], 
 		{ammo='Staunch Tathlum', neck='Loricate Torque', lring='Defending Ring', rring='Moonbeam ring', body='Malignance Tabard'})
 		
 	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW[45].DT = set_combine(sets.engaged.DW[59], {})
+	sets.engaged.DW['45'].DT = set_combine(sets.engaged.DW['59'], {})
 	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW[42].DT = set_combine(sets.engaged.DW[59], {})
+	sets.engaged.DW['42'].DT = set_combine(sets.engaged.DW['59'], {})
 	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW[35].DT = set_combine(sets.engaged.DW[59], {})
+	sets.engaged.DW['35'].DT = set_combine(sets.engaged.DW['59'], {})
 	--/NIN 30% haste
-	sets.engaged.DW[31].DT = set_combine(sets.engaged.DW[59], {})
+	sets.engaged.DW['31'].DT = set_combine(sets.engaged.DW['59'], {})
 	--/DNC capped haste, no samba
-	sets.engaged.DW[21].DT = set_combine(sets.engaged.DW[59], {})
+	sets.engaged.DW['21'].DT = set_combine(sets.engaged.DW['59'], {})
 	--/NIN capped haste
-	sets.engaged.DW[11].DT = set_combine(sets.engaged.DW[59], {})
+	sets.engaged.DW['11'].DT = set_combine(sets.engaged.DW['59'], {})
 	
 	-------------------------------------------------------------------------------------------------------------------------
 												--Dual Wield + PetDT Sets
 	-------------------------------------------------------------------------------------------------------------------------
 	
 	--/DNC no haste
-	sets.engaged.DW[59].PetDT = {}	
+	sets.engaged.DW['59'].PetDT = {}	
 	--/NIN no haste | /DNC 15% haste, no samba
-	sets.engaged.DW[49].PetDT = {}
+	sets.engaged.DW['49'].PetDT = {}
 	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW[45].PetDT = {}
+	sets.engaged.DW['45'].PetDT = {}
 	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW[42].PetDT = {}
+	sets.engaged.DW['42'].PetDT = {}
 	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW[35].PetDT = {}
+	sets.engaged.DW['35'].PetDT = {}
 	--/NIN 30% haste
-	sets.engaged.DW[31].PetDT = {}
+	sets.engaged.DW['31'].PetDT = {}
 	--/DNC capped haste, no samba
-	sets.engaged.DW[21].PetDT = {}
+	sets.engaged.DW['21'].PetDT = {}
 	--/NIN capped haste
-	sets.engaged.DW[11].PetDT = {}
+	sets.engaged.DW['11'].PetDT = {}
 	
 	-------------------------------------------------------------------------------------------------------------------------
 													--AM3 sets for Aymur
 	-------------------------------------------------------------------------------------------------------------------------
 	--/DNC no haste
-	sets.engaged.DW[59].AM3 = set_combine(sets.engaged.DW[59], 
+	sets.engaged.DW['59'].AM3 = set_combine(sets.engaged.DW['59'], 
 		{ammo='Aurgelmir Orb +1', 
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	--/NIN no haste |/DNC 15% haste, no samba
-	sets.engaged.DW[49].AM3 = set_combine(sets.engaged.DW[49],
+	sets.engaged.DW['49'].AM3 = set_combine(sets.engaged.DW['49'],
 		{ammo='Aurgelmir Orb +1', 
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW[45].AM3 = set_combine(sets.engaged.DW[45],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
+	sets.engaged.DW['45'].AM3 = set_combine(sets.engaged.DW['45'],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='wardrobe2'}, lring={name='Chirich Ring +1', bag='wardrobe3'}})
 	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW[42].AM3 = set_combine(sets.engaged.DW[42],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
+	sets.engaged.DW['42'].AM3 = set_combine(sets.engaged.DW['42'],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW[35].AM3 = set_combine(sets.engaged.DW[35],
+	sets.engaged.DW['35'].AM3 = set_combine(sets.engaged.DW['35'],
 		{ammo='Aurgelmir Orb +1', lear='Suppanomimi', body='Malignance Tabard', hands='Malignance Gloves',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	--/NIN 30% haste
-	sets.engaged.DW[31].AM3 = set_combine(sets.engaged.DW[31],
+	sets.engaged.DW['31'].AM3 = set_combine(sets.engaged.DW['31'],
 		{ammo='Aurgelmir Orb +1', rear='Eabani Earring', body='Malignance Tabard', hands='Malignance Gloves',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	--/DNC capped haste, no samba
-	sets.engaged.DW[21].AM3 = set_combine(sets.engaged.DW[21], 
+	sets.engaged.DW['21'].AM3 = set_combine(sets.engaged.DW['21'], 
 		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 	--/NIN capped haste
-	sets.engaged.DW[11].AM3 = set_combine(sets.engaged.DW[11],
+	sets.engaged.DW['11'].AM3 = set_combine(sets.engaged.DW['11'],
 		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
 		
@@ -563,21 +563,21 @@ function init_gear_sets()
 	-------------------------------------------------------------------------------------------------------------------------
 	
 	--/DNC no haste
-	sets.engaged.DW[59].AM3.PetDT = {}
+	sets.engaged.DW['59'].AM3.PetDT = {}
 	--/NIN no haste | /DNC 15% haste, no samba
-	sets.engaged.DW[49].AM3.PetDT = {}
+	sets.engaged.DW['49'].AM3.PetDT = {}
 	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW[45].AM3.PetDT = {}
+	sets.engaged.DW['45'].AM3.PetDT = {}
 	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW[42].AM3.PetDT = {}
+	sets.engaged.DW['42'].AM3.PetDT = {}
 	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW[35].AM3.PetDT = {}
+	sets.engaged.DW['35'].AM3.PetDT = {}
 	--/NIN 30% haste
-	sets.engaged.DW[31].AM3.PetDT = {}
+	sets.engaged.DW['31'].AM3.PetDT = {}
 	--/DNC capped haste, no samba
-	sets.engaged.DW[21].AM3.PetDT = {}
+	sets.engaged.DW['21'].AM3.PetDT = {}
 	--/NIN capped haste
-	sets.engaged.DW[11].AM3.PetDT = {}
+	sets.engaged.DW['11'].AM3.PetDT = {}
 	
 end
 
@@ -662,14 +662,10 @@ end
 gearswap.parse.i[0x0DD] = function(data)
 	local parsed = packets.parse("incoming", data)
 	local player_id = parsed['ID']
-	local name = parsed['Name']
-	local job = parsed['Main job']
-		
+	local job = parsed['Main job']	
 	--if not a trust then add to the list with job
 	--if there is a trust that can cast Haste II add to the list as a RDM
 	if job > 0 then
 		party_setup[player_id] = res.jobs[job].english_short
-	elseif T{"Ygnas", "Arciela", "KingOfHearts", "Koru-Moru"}:contains(name) then
-		party_setup[player_id] = "RDM"
 	end
 end

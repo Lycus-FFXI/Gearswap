@@ -21,7 +21,7 @@ state.SelectedJug = 'NONE'
 
 --Used for determining what kind of haste buffs you are recieving
 --Some of these arent used anymore, but I've left them in just in case I change my mind
-state.DWHaste = M{['description']='Dual Wield Haste Amount','NONE', 59,55,52,49,42,35,31,25,21,11,9}
+state.DWHaste = M{['description']='Dual Wield Haste Amount','NONE','59','55','52','49','42','35','31','25','21','11','9'}
 state.Haste = M{['description']='Haste Mode', 15, 25, 30}
 state.Manual_Haste = M(false, "Manual Haste Selection")
 
@@ -1051,11 +1051,14 @@ function check_party()
 								Trust_BRD = true
 							elseif GEO_TRUSTS:contains(member.name) then								
 								Trust_GEO =  member.name
+							elseif T{"Ygnas", "Arciela", "KingOfHearts", "Koru-Moru"}:contains(member.name) then		
+								party_setup[member.mob.id] = "RDM"
 							end
 						end
 						local memberid = member.mob.id
 						local job = party_setup[memberid]
-						if job then
+						--add_to_chat(155, member.name)
+						if job then	
 							if job == "RDM"  or job == "SMN" then
 								party_haste = 30
 							end
@@ -1140,79 +1143,48 @@ function check_haste()
 		
 		if player.sub_job == 'NIN' then		
 			if haste_value >= 40 then
-				state.DWHaste:Set(11)
+				state.DWHaste:Set('11')
 			elseif haste_value >= 30 then
-				state.DWHaste:Set(31)
+				state.DWHaste:Set('31')
 			elseif haste_value >= 25 then
-				state.DWHaste:Set(35)
+				state.DWHaste:Set('35')
 			elseif haste_value >= 15 then				
-				state.DWHaste:Set(42)
+				state.DWHaste:Set('42')
 			else
-				state.DWHaste:Set(49)
+				state.DWHaste:Set('49')
 			end
 		elseif player.sub_job == 'DNC' then 
 			if haste_value >= 40 then
 				if buffactive['Haste Samba'] then
-					--state.DWHaste:Set(9)
-					state.DWHaste:Set(11)					
+					--state.DWHaste:Set('9')
+					state.DWHaste:Set('11')					
 				else
-					state.DWHaste:Set(21)
+					state.DWHaste:Set('21')
 				end
 			elseif haste_value >= 30 then
 				if buffactive['Haste Samba'] then
-					state.DWHaste:Set(35)
+					state.DWHaste:Set('35')
 				else
-					state.DWHaste:Set(42)
+					state.DWHaste:Set('42')
 				end
 			elseif haste_value >= 25 then
 				if buffactive['Haste Samba'] then
-					state.DWHaste:Set(42)
+					state.DWHaste:Set('42')
 				else
-					state.DWHaste:Set(45)
+					state.DWHaste:Set('45')
 				end
 			elseif haste_value >= 15 then				
 				if buffactive['Haste Samba'] then
-					state.DWHaste:Set(45)
+					state.DWHaste:Set('45')
 				else
-					--state.DWHaste:Set(52)
-					state.DWHaste:Set(49)
+					--state.DWHaste:Set('52')
+					state.DWHaste:Set('49')
 				end
 			else
-				state.DWHaste:Set(59)
+				state.DWHaste:Set('59')
 			end
 		end
 	end
-end
-
--- Returns true if you're in a party solely comprised of Trust NPCs.
--- TODO: Do we need a check to see if we're in a party partly comprised of Trust NPCs?
-function is_trust_party()
-    -- Check if we're solo
-    if party.count == 1 then
-        return false
-    end
-	
-    -- If we're in an alliance, can't be a Trust party.
-    if alliance[2].count > 0 or alliance[3].count > 0 then
-        return false
-    end
-    
-    -- Check that, for each party position aside from our own, the party
-    -- member has one of the Trust NPC names, and that those party members
-    -- are flagged is_npc.
-    for i = 2,6 do
-        if party[i] then
-            if not npcs.Trust:contains(party[i].name) then
-                return false
-            end
-            if party[i].mob and party[i].mob.is_npc == false then
-                return false
-            end
-        end
-    end
-    
-    -- If it didn't fail any of the above checks, return true.
-    return true
 end
 
 function indexOf(array, value)
@@ -1232,7 +1204,7 @@ end
 windower.register_event('zone change',function(new, old)
  
   zoning = true;
-  party_setup = T{}
+  --party_setup = T{}
   coroutine.schedule(zoningFinished, 5)
   
 end)
@@ -1254,6 +1226,4 @@ windower.raw_register_event("prerender",function()
 	end	
 	
 end)
-
-
 fill_keybind_strings()
