@@ -7,14 +7,36 @@
 
 texts = require('texts')
 res = require('resources')
+packets = require("packets")
 require('queues')
 
 include('BST-PETS.lua')
+
+--HUD Specific states
+state.ShowUI = M(true, 'HUD')
+state.ShowUIHotkeys = M(false, 'Show Hotkeys')
+--JUG Specific states
+state.JugsInInventory = Q{}	
+state.SelectedJug = 'NONE'
+
+--Used for determining what kind of haste buffs you are recieving
+--Some of these arent used anymore, but I've left them in just in case I change my mind
+state.DWHaste = M{['description']='Dual Wield Haste Amount','NONE', 59,55,52,49,42,35,31,25,21,11,9}
+state.Haste = M{['description']='Haste Mode', 15, 25, 30}
+state.Manual_Haste = M(false, "Manual Haste Selection")
 
 local Ready_Moves = T{}
 local selected_jug_count = 0
 local selected_reward_count = 0
 
+local BRD_TRUSTS = T{"Ulmia", "Joachim"}
+local GEO_TRUSTS = T{"Sylvie", "Cornelia"}
+local Trust_BRD = false
+local Trust_GEO = ""
+local dualwield = false
+local zoning = false
+
+local previously_selected_jug = ""
 -------------------------------------------------------------------------------------------------------------------
 -- Job-specific hooks that are called to process player actions at specific points in time.
 -------------------------------------------------------------------------------------------------------------------
@@ -30,6 +52,15 @@ function job_precast(spell, action, spellMap, eventArgs)
 	if spell.english == 'Reward' then
 		equip({ammo=state.RewardItem.value})
 	end
+	--If we have an NQ jug in our inventory when we try to call beast using an HQ jug, use the NQ instead.
+	if spell.english == 'Call Beast' then
+		if HQ_Jugs[state.SelectedJug] then
+			if state.JugsInInventory['data']:contains(HQ_Jugs[state.SelectedJug]) then
+				previously_selected_jug = state.SelectedJug
+				state.SelectedJug = HQ_Jugs[state.SelectedJug]
+			end
+		end
+	end
 end
 
 -- Run after the default precast() is done.
@@ -41,7 +72,6 @@ function job_post_precast(spell, action, spellMap, eventArgs)
 		equip(gear.sroda_earring)
 	end
 end
-
 
 -- Set eventArgs.handled to true if we don't want any automatic gear equipping to be done.
 function job_midcast(spell, action, spellMap, eventArgs)
@@ -63,13 +93,17 @@ function job_post_midcast(spell, action, spellMap, eventArgs)
 end
 -- Set eventArgs.handled to true if we don't want any automatic gear equipping to be done.
 function job_aftercast(spell, action, spellMap, eventArgs)	
-	
+
 end
 
 -- Run after the default aftercast() is done.
 -- eventArgs is the same one used in job_aftercast, in case information needs to be persisted.
-function job_post_aftercast(spell, action, spellMap, eventArgs)
-	
+function job_post_aftercast(spell, action, spellMap, eventArgs)	
+	--If we just used an NQ jug swap back to pointing at the HQ jug
+	if spell.english == "Call Beast" and previously_selected_jug ~= "" then
+		state.SelectedJug = previously_selected_jug
+		previously_selected_jug = ""
+	end
 end
 
 
@@ -104,8 +138,12 @@ function customize_idle_set(idleSet)
 	if state.LockMain.value ~= 'disabled' or player.equipment.main == '' then
 		idleSet = set_combine(idleSet, {main=state.Main.value})
 	end
-	if (state.LockSub.value ~= 'disabled' or player.equipment.sub == '') and state.Dualwield.value > 0  then
-		idleSet = set_combine(idleSet, {sub=state.Sub.value})
+	if (state.LockSub.value ~= 'disabled' or player.equipment.sub == '') and dualwield then
+		if state.Sub.value:lower() == 'empty' then
+			idleSet = set_combine(idleSet, {sub=empty})
+		else
+			idleSet = set_combine(idleSet, {sub=state.Sub.value})
+		end
 	end
 	
 	return idleSet
@@ -116,8 +154,12 @@ function customize_melee_set(meleeSet)
 	if state.LockMain.value ~= 'disabled' or player.equipment.main == '' then
 		meleeSet = set_combine(meleeSet, {main=state.Main.value})
 	end
-	if (state.LockSub.value ~= 'disabled' or player.equipment.sub == '') and state.Dualwield.value > 0  then
-		meleeSet = set_combine(meleeSet, {sub=state.Sub.value})
+	if (state.LockSub.value ~= 'disabled' or player.equipment.sub == '') and dualwield then
+		if state.Sub.value:lower() == 'empty' then
+			meleeSet = set_combine(meleeSet, {sub=empty})
+		else
+			meleeSet = set_combine(meleeSet, {sub=state.Sub.value})
+		end
 	end
 	return meleeSet
 end
@@ -126,8 +168,12 @@ function customize_defense_set(defenseSet)
 	if state.LockMain.value ~= 'disabled' or player.equipment.main == '' then
 		defenseSet = set_combine(defenseSet, {main=state.Main.value})
 	end
-	if (state.LockSub.value ~= 'disabled' or player.equipment.sub == '') and state.Dualwield.value > 0  then
-		defenseSet = set_combine(defenseSet, {sub=state.Sub.value})
+	if (state.LockSub.value ~= 'disabled' or player.equipment.sub == '') and dualwield then
+		if state.Sub.value:lower() == 'empty' then
+			defenseSet = set_combine(defenseSet, {sub=empty})
+		else
+			defenseSet = set_combine(defenseSet, {sub=state.Sub.value})
+		end
 	end
    return defenseSet
 end
@@ -156,12 +202,12 @@ function job_state_change(field, new_value, old_value)
 		else
 			enable('sub')
 		end
-	elseif field == 'Main-hand Mode' and state.Sub.value ~= 'None' then
+	elseif field == 'Main-hand Mode' and state.Sub.value ~= 'Empty' then
 		if state.Sub.value == new_value then
 			send_command("gs c cycle Main")
 		end
 	elseif field == 'Off-hand Mode'  then
-		if state.Dualwield.value > 0  then
+		if dualwield then
 			if state.Main.value == new_value then
 				send_command("gs c cycle Sub")
 			end
@@ -170,6 +216,8 @@ function job_state_change(field, new_value, old_value)
 		end
 	elseif field == 'HUD' then
 		hideTextSections()
+	elseif field == 'Haste Mode' then
+		state.Manual_Haste:set(true)
 	end
     get_combat_form()
     handle_equipping_gear(player.status)
@@ -205,11 +253,8 @@ function buff_refresh(name,buff_details)
 end
 
 function job_update(cmdParams, eventArgs)
-	--check_dual_wield()
-	if is_trust_party() then
-		state.Support:Set('Party')
-	end
 	get_ready_moves()
+	check_party()
 	get_combat_form()
 end
 
@@ -218,29 +263,31 @@ function sup_job_change(new, old)
 end
 
 function check_dual_wield()
+	--If not under SJ restriction
 	if not buffactive[157] then
-		if player.sub_job == 'NIN' then
-			state.Dualwield:Set(25)
-			state.CombatForm:Set('NIN')
-		elseif player.sub_job == 'DNC' then
-			state.Dualwield:Set(15)
-			state.CombatForm:Set('DNC')
+		if player.sub_job == 'NIN' or player.sub_job == 'DNC' then
+			state.CombatForm:Set('DW')
+			dualwield = true
+		else
+			dualwield = false
 		end
 		check_weapons()
 	else
-		state.Dualwield:Set(0)
 		state.CombatForm:clear()
 		state.Sub:Set('Empty')
+		dualwield = false
 	end
 end
 
-function check_weapons()
-	if state.Main:contains(player.equipment.main) then 
+function check_weapons()	
+		
+	if player.equipment.main and state.Main:contains(player.equipment.main) then 
 		state.Main:Set(player.equipment.main)
 	end
-	if state.Sub:contains(player.equipment.sub) then 
+	if player.equipment.sub and state.Sub:contains(player.equipment.sub) then 
 		state.Sub:Set(player.equipment.sub)
 	end
+
 end
 -------------------------------------------------------------------------------------------------------------------
 -- User code that supplements self-commands.
@@ -307,9 +354,9 @@ end
 -- Set eventArgs.handled to true if we don't want the automatic display to be run.
 function display_current_job_state(eventArgs)
 
-	if is_trust_party() then
-		state.Support:Set('Party')
-	end
+	-- if is_trust_party() then
+		-- state.Support:Set('Party')
+	-- end
 	local msg = 'Mode: '.. state.OffenseMode.value
 	 
 	if state.DefenseMode.value ~= 'None' then
@@ -335,54 +382,6 @@ function check_buff(buff_name, eventArgs)
     end
 end
 
-function check_haste()
-	if state.Dualwield.value ~= 0 then
-		local haste_value = 0
-		
-		if buffactive[33] then
-			haste_value = state.Haste.value
-		end
-		
-		if state.Support == 'Solo' then --Assume trust buffs
-			
-			if buffactive[580] then haste_value = haste_value + 30 end --GEO Haste
-			if buffactive[214]==1 then haste_value = haste_value + 15 end --Single March
-			if buffactive[214]==2 then haste_value = haste_value + 25 end -- Double March
-		
-		else --Assume GOOD buffs
-		
-			if buffactive[214]==1 then haste_value = haste_value + 17 end --Single March
-			if buffactive[214]==2 then 
-				haste_value = haste_value + 45  --Double March (Don't bother calculating anything else)
-			else
-				if buffactive[580] then haste_value = haste_value + 30 end--GEO Haste
-				if buffactive[228] then haste_value = haste_value + 30 end --Embrava
-				if buffactive[604] then haste_value = haste_value + 15 end --Mighty Guard
-			end
-		end	
-		
-		if buffactive['Haste Samba'] then
-			haste_value = haste_value + 5
-		end
-		
-		if haste_value >= 40 and buffactive['Haste Samba'] then
-			state.DWHaste:Set('MAX+Samba')
-		elseif haste_value >= 40 then
-			state.DWHaste:Set('MAX')
-		elseif haste_value >= 30 then
-			state.DWHaste:Set('30')
-		elseif haste_value >= 25 then
-			state.DWHaste:Set('25')
-		elseif haste_value >= 15 then				
-			state.DWHaste:Set('15')
-		elseif haste_value >= 10 then	
-			state.DWHaste:Set('10')
-		else
-			state.DWHaste:Set('NONE')
-		end
-	end
-end
-
 function get_aftermath()
 	if buffactive[272] then
 		classes.CustomMeleeGroups:append("AM3")
@@ -393,11 +392,13 @@ function select_default_macro_book(page, book)
     set_macro_page(page, book)
 end
 
-windower.register_event('zone change',function(new, old)
- 
-  if handle_equipping_gear then handle_equipping_gear() end
- 
-end)
+function init()
+	
+	check_dual_wield()
+	get_ready_moves()	
+	check_party()
+	get_combat_form()
+end
 
 function map_ready_moves()
 
@@ -477,9 +478,10 @@ function fill_keybind_strings()
 	keybinds_on['keybind_defense'] = add_color('(F10)', const_text_blue)
 	keybinds_on['keybind_ready'] = add_color(' (WIN+1~7)', const_text_blue)
 
-	keybinds_on['keybind_jug'] = add_color(' (Home)', const_text_blue)
-	keybinds_on['keybind_reward'] = add_color(' (End)', const_text_blue)
+	keybinds_on['keybind_jug'] = add_color(' (PgUp)', const_text_blue)
+	keybinds_on['keybind_reward'] = add_color(' (PgDown)', const_text_blue)
 
+	keybinds_on['master_header'] = add_color('================ Master ================', const_text_header)
 	keybinds_on['pet_header'] = add_color('================== Pet =================', const_text_header)
 	keybinds_on['pet_info_header']= add_color('============== Pet Settings ==============', const_text_header)
 
@@ -499,7 +501,8 @@ function fill_keybind_strings()
 	keybinds_off['keybind_jug'] = ''
 	keybinds_off['keybind_reward'] = ''
 
-	keybinds_off['pet_header'] = add_color('============= Pet =============', const_text_header)
+	keybinds_off['master_header'] = add_color('============ Master ============', const_text_header)
+	keybinds_off['pet_header'] = add_color('============== Pet =============', const_text_header)
 	keybinds_off['pet_info_header']= add_color('========== Pet Settings ==========', const_text_header)
 end
 
@@ -516,16 +519,18 @@ end
 
 
 hub_master_info_std = 
-[[\cs(255,253,219)========= Master (\cr${master_support_status|SOLO}${keybind_support}\cs(255,253,219)) =========\cr
+[[${master_header}
 - \cs(255,255,255)Mainhand\cr ${keybind_master_mainhand} \cs(255,255,255):\cr ${master_mainhand|Empty}
 - \cs(255,255,255)Offhand\cr   ${keybind_master_offhand} \cs(255,255,255):\cr ${master_offhand|Empty} 
 
-- \cs(255,255,255)Haste Mode\cr ${keybind_hastemode} \cs(255,255,255):\cr \cs(101, 214, 127)${master_hastemode|10}%\cr
-- \cs(255,255,255)Dual Wield Set :\cr ${master_dw_set}
+- \cs(255,255,255)Haste Mode\cr ${keybind_hastemode} \cs(255,255,255):\cr ${master_hastemode|10}\cs(255,255,255)%\cr${HUD_Dual_Wield}${master_dw_set}
 
 - \cs(255,255,255)Offense\cr ${keybind_offense}\cs(255,255,255):\cr ${master_offense_mode} \cs(255,255,255)| Defense\cr ${keybind_defense}\cs(255,255,255):\cr ${master_defense_mode}
   
 ]]
+
+hub_master_dw_line=[[
+\cs(255,255,255) | Dual Wield : \cr]]
 
 hub_pet_info_std = 
 [[${pet_header}
@@ -550,8 +555,8 @@ hub_pet_settings =
 - \cs(255,255,255)Jug Info :\cr ${pet_jug_name} (${pet_jug_family})
 - \cs(255,255,255)Reward\cr${keybind_reward} \cs(255,255,255):\cr ${pet_reward_item} \cs(255,255,255)Count :\cr ${pet_reward_inventory|0}
 
- CTRL+PageUp display hotkeys
- CTRL+PageDn hide HUD]]
+ Press End to display hotkeys
+ CTRL+End to hide HUD]]
 
 --Default To Set Up the Text Window
 function setupTextWindow(pos_x, pos_y, text_size)
@@ -627,7 +632,7 @@ end
 function validateTextInformation()
 
     --State Information
-	main_text_hub.master_support_status = add_color(state.Support.current, const_text_green)
+	--main_text_hub.master_support_status = add_color(Support.current, const_text_green)
 	
 	if state.LockMain.current ~= 'enabled'then
 		main_text_hub.master_mainhand = add_color(state.Main.current, const_text_red)
@@ -641,12 +646,18 @@ function validateTextInformation()
 		main_text_hub.master_offhand = add_color(state.Sub.current, const_text_green)
 	end
 	
-	main_text_hub.master_hastemode = state.Haste.current	
+	if state.Manual_Haste and state.Manual_Haste.value then
+		main_text_hub.master_hastemode = add_color(state.Haste.current, const_text_red)
+	else
+		main_text_hub.master_hastemode = add_color(state.Haste.current, const_text_green)
+	end
 
-	if  state.DWHaste.current ~= 'NONE' then
+	if  state.DWHaste.current ~= 'NONE' and dualwield then
+		main_text_hub.HUD_Dual_Wield = hub_master_dw_line
 		main_text_hub.master_dw_set = add_color(state.DWHaste.current, const_text_green)	
 	else
-		main_text_hub.master_dw_set = add_color(state.DWHaste.current, const_text_red)
+		main_text_hub.HUD_Dual_Wield = ''
+		main_text_hub.master_dw_set = ''
 	end
 	
 	main_text_hub.master_offense_mode = add_color(state.OffenseMode.current, const_text_gold)
@@ -824,23 +835,6 @@ function add_color(in_str, const_color)
 	return const_color..in_str..'\\cr'	
 end
 
-local fps = 0
-windower.register_event("prerender",function()
-	
-	validateTextInformation()            
-	
-	--check inventory once every second.
-	if fps >= 30 then
-		get_jugs()
-		check_item_counts()
-		fps = 0
-	else
-		fps = fps + 1
-	end	
-	
-end)
-
-
 function check_item_counts()
 	if state.SelectedJug and state.selected_jug ~= '' or state.selected_jug ~= '' then
 		selected_jug_count = get_item_count(state.SelectedJug)
@@ -1008,6 +1002,188 @@ function get_item_count(item)
 	return return_val
 end
 
+function check_party()
+	if not state.Manual_Haste.value then
+		local party_haste = 15
+		local member
+		Trust_BRD = false
+		Trust_GEO = ""
+		if windower.ffxi.get_party().party2_count > 0 or windower.ffxi.get_party().party3_count > 0 then
+				for i=0,5 do
+					member = windower.ffxi.get_party()['a1'..i]
+					if member and member.mob then
+						local memberid = member.mob.id
+						if party_setup[memberid] then 
+							local job = party_setup[memberid]
+							if job and (job == "RDM" ) then
+								party_haste = 30
+							end
+						end
+					end
+				end
+				for i=0,5 do
+					member = windower.ffxi.get_party()['a2'..i]
+					if member and member.mob then
+						local memberid = member.mob.id
+						local job = party_setup[memberid]
+						if job and (job == "RDM") then
+							party_haste = 30
+						end
+					end
+				end
+				for i=1,5 do
+					member = windower.ffxi.get_party()['p'..i]
+					if member and member.mob then
+						local memberid =member.mob.id
+						local job = party_setup[memberid]
+						if job and (job == "RDM"  or job=="SMN") then
+							party_haste = 30
+						end
+					end
+				end
+		else
+			if windower.ffxi.get_party().party1_count > 1 then
+				for i=1,5 do
+					member = windower.ffxi.get_party()['p'..i]
+					if member and member.mob then
+						if member.mob.is_npc then
+							if BRD_TRUSTS:contains(member.name) then
+								Trust_BRD = true
+							elseif GEO_TRUSTS:contains(member.name) then								
+								Trust_GEO =  member.name
+							end
+						end
+						local memberid = member.mob.id
+						local job = party_setup[memberid]
+						if job then
+							if job == "RDM"  or job == "SMN" then
+								party_haste = 30
+							end
+						end
+					end
+				end
+			end
+		end
+		--if you can get 25% haste from your pet
+		if pet.isvalid and (pet.name == "VivaciousVickie" or pet.name == "CaringKiyomaro") and party_haste == 15 then
+			party_haste = 25
+		end
+		state.Haste:set(party_haste)
+	end
+end
+
+function check_haste()
+	if player.sub_job == 'NIN' or player.sub_job == 'DNC' then
+		local haste_value = 0
+		
+		if buffactive[33] then
+			haste_value = state.Haste.value
+		end
+		--Marches
+		if buffactive[214] then		
+			if buffactive[214]==1 then 
+				if Trust_BRD then
+					haste_value = haste_value + 15 
+				else
+					if BRD_Has_Marsyas.value then
+						haste_value = haste_value + 17 
+					else
+						haste_value = haste_value + 28 
+					end
+				end
+			elseif buffactive[214]>=2 then 
+				if Trust_BRD then
+					haste_value = haste_value + 25 
+				else
+					if BRD_Has_Marsyas.value then
+						haste_value = haste_value + 41 
+					else
+						haste_value = haste_value + 41 
+					end
+				end
+			end 
+		end
+		
+		--Slow & elegy (assume slow II or max elegy)
+		if buffactive[13] or buffactive[194] then
+			haste_value = haste_value - 50
+		end
+		
+		--GEO Haste	(don't bother calculating if we have capped haste)
+		if buffactive[580] and haste_value < 41 then 
+			if Trust_GEO == "Sylvie" then
+				haste_value = haste_value + 28
+			elseif Trust_GEO == "Cornelia" then
+				haste_value = haste_value + 20	
+			else				
+				if GEO_Potency.value == 10 then
+					haste_value = haste_value + 41
+				elseif GEO_Potency.value == 7 then
+					haste_value = haste_value + 37
+				elseif GEO_Potency.value == 6 then
+					haste_value = haste_value + 36
+				else
+					haste_value = haste_value + 35
+				end					
+			end
+		end 
+		
+		--Embrava (don't bother calculating if we have capped haste)
+		if buffactive[228]  and haste_value < 41 then 
+			haste_value = haste_value + 25
+		end
+		
+		--Mighty Guard (don't bother calculating if we have capped haste)
+		if buffactive[604]  and haste_value < 41 then
+			haste_value = haste_value + 15 
+		end
+		
+		if player.sub_job == 'NIN' then		
+			if haste_value >= 40 then
+				state.DWHaste:Set(11)
+			elseif haste_value >= 30 then
+				state.DWHaste:Set(31)
+			elseif haste_value >= 25 then
+				state.DWHaste:Set(35)
+			elseif haste_value >= 15 then				
+				state.DWHaste:Set(42)
+			else
+				state.DWHaste:Set(49)
+			end
+		elseif player.sub_job == 'DNC' then 
+			if haste_value >= 40 then
+				if buffactive['Haste Samba'] then
+					--state.DWHaste:Set(9)
+					state.DWHaste:Set(11)					
+				else
+					state.DWHaste:Set(21)
+				end
+			elseif haste_value >= 30 then
+				if buffactive['Haste Samba'] then
+					state.DWHaste:Set(35)
+				else
+					state.DWHaste:Set(42)
+				end
+			elseif haste_value >= 25 then
+				if buffactive['Haste Samba'] then
+					state.DWHaste:Set(42)
+				else
+					state.DWHaste:Set(45)
+				end
+			elseif haste_value >= 15 then				
+				if buffactive['Haste Samba'] then
+					state.DWHaste:Set(45)
+				else
+					--state.DWHaste:Set(52)
+					state.DWHaste:Set(49)
+				end
+			else
+				state.DWHaste:Set(59)
+			end
+		end
+	end
+end
+
 -- Returns true if you're in a party solely comprised of Trust NPCs.
 -- TODO: Do we need a check to see if we're in a party partly comprised of Trust NPCs?
 function is_trust_party()
@@ -1047,5 +1223,37 @@ function indexOf(array, value)
     end
     return nil
 end
---check_dual_wield()
+
+function zoningFinished()
+	zoning = false
+	handle_equipping_gear()
+end
+
+windower.register_event('zone change',function(new, old)
+ 
+  zoning = true;
+  party_setup = T{}
+  coroutine.schedule(zoningFinished, 5)
+  
+end)
+
+local fps = 0
+windower.raw_register_event("prerender",function()
+	
+	if zoning then return end
+	
+	validateTextInformation()            
+	--check inventory once every second.
+	if fps >= 30 then
+		get_jugs()
+		check_item_counts()
+		check_party()
+		fps = 0
+	else
+		fps = fps + 1
+	end	
+	
+end)
+
+
 fill_keybind_strings()

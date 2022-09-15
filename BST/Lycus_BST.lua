@@ -48,13 +48,14 @@
 function get_sets()
     mote_include_version = 2
 	-- Load and initialize the include file.
-	include('Mote-Include.lua')	
-	set_bindings()
+	include('Mote-Include.lua')		
 end
 -- Setup vars that are user-independent.
 function job_setup()
+	party_setup = T{}
 	include('BST-LIB.lua')	
 	map_ready_moves()
+	set_keybinds(2)	
 end
 
 
@@ -63,7 +64,7 @@ function user_setup()
 
 	state.OffenseMode:options('Master', 'Pet')
 	state.DefenseMode:options('None', 'Active')
-	state.ActiveDefenseMode = M{['description'] = 'Damage Taken Mode', 'DT', 'PetDT', 'MixDT'}
+	state.ActiveDefenseMode = M{['description'] = 'Damage Taken Mode', 'DT', 'PetDT'}
 	
 	--Weapon lists. Feel free to customize
 	state.Main = M{['description']='Main-hand Mode', "Aymur", "Naegling", "Ankusa Axe", "Dolichenus", "Agwu's Axe"}
@@ -75,109 +76,24 @@ function user_setup()
 	
 	state.RewardItem = M{['description']='Reward Item', 'Pet Food Theta', 'Pet Roborant', 'Pet Poultice'}	
 	
-	--Used for determining what kind of haste buffs you are recieving
-	state.Support = M{'Solo','Party'}
-	state.Haste = M{['description']='Haste Mode', 15, 25, 30}	
-	
-	--Used for determining what dual wield set to equip
-	--DO NOT MODIFY
-	state.Dualwield = M{['description']='Dual Wield Mode', 0, 15, 25}
-	state.DWHaste = M{['description']='Dual Wield Haste Amount','NONE', '10', '15', '25', '30', 'MAX', 'MAX+Samba'}
+	--How well geared are your fellow party members? (Does not apply to trusts)
+	--10 = Idris, 7 = +2 Neck, 6 = +1 Neck, 5 = Dunna or NQ neck.
+	--Set the first value to whatever your GEO has. Default is assume Idris.
+	GEO_Potency = M{10, 7, 6, 5} 	
+	BRD_Has_Marsyas = M(true, "Honor March BRD")
 
 	--If your pet is alive then use the Sroda Earring (Double Atk +7%)
 	sroda_earring_weaponskills = T{'Decimation', 'Ruinator'}
-	
-	--[[============================================================================
-	DO NOT MODIFY. THESE ARE AUTOMATICALLY POPULATED BASED ON YOUR INVENTORY AND PET
-	================================================================================]]--
-	state.JugsInInventory = Q{}	
-	state.SelectedJug = 'NONE'
-	--===============================================================================--
-	
-	--HUD Specific states
-	state.ShowUI = M(true, 'HUD')
-	state.ShowUIHotkeys = M(false, 'Show Hotkeys')
 
-	select_default_macro_book(1, 10)
+	select_default_macro_book(1, 10)	
 	
-	pos_x=0
-	pos_y=0	
 	--setupTextWindow at position, and define text size (default is 12 if not included)
+	pos_x=0
+	pos_y=0		
 	setupTextWindow(pos_x, pos_y, 10)	
-	
-	--perform some final setup
-	check_dual_wield()
-	get_ready_moves()	
-	get_combat_form()
-end
---For some reason setting the bindings in the user_setup wasn't working when gearswap first loads.
-function set_bindings()
-	send_command('bind ^Home gs c update user')
-	send_command('bind Home gs c SelectJug')
-	send_command('bind End gs c cycle RewardItem')
 
-	send_command('bind f9 gs c cycle OffenseMode')
-	send_command('bind ^f9 gs c cycle Support')
-	send_command('bind !f9 gs c cycle Haste')	
-	
-	send_command('unbind @f9')
-	
-	send_command('bind f10 gs c cycle DefenseMode')
-	send_command('bind !f10 gs c reset DefenseMode')
-	send_command('bind ^f10 gs c cycle ActiveDefenseMode')
-	
-	send_command('bind f11 gs c cycle Main')
-	send_command('bind ^f11 gs c cycle LockMain')
-	
-	send_command('bind f12 gs c cycle Sub')
-	send_command('bind ^f12 gs c cycle LockSub')	
-	send_command('bind !f12 gs c toggle Kiting')
-	
-	send_command('bind ^PageDown gs c cycle ShowUI')
-	send_command('bind ^PageUp gs c cycle ShowUIHotkeys')
-	
-	
-	send_command('bind @1 bstpet 1')
-	send_command('bind @2 bstpet 2')
-	send_command('bind @3 bstpet 3')
-	send_command('bind @4 bstpet 4')
-	send_command('bind @5 bstpet 5')
-	send_command('bind @6 bstpet 6')
-	send_command('bind @7 bstpet 7')
-	
+	init()	
 end
--- Called when this job file is unloaded (eg: job change)
-function file_unload()
-	send_command('unbind Home')
-	send_command('unbind End')
-	send_command('unbind ^PageDown')
-	send_command('unbind ^PageUp')
-
-	send_command('unbind f9')
-	send_command('unbind !f9')
-	send_command('unbind ^f9')
-	
-	send_command('unbind f10')
-	send_command('unbind ^f10')
-	send_command('unbind !f10')
-	
-	send_command('unbind f11')	
-	send_command('unbind ^f11')
-	send_command('unbind !f11')
-	
-	send_command('unbind f12')
-	send_command('unbind ^f12')
-	send_command('unbind !f12')
-	
-	send_command('unbind @1')
-	send_command('unbind @2')
-	send_command('unbind @3')
-	send_command('unbind @4')
-	send_command('unbind @5')
-	send_command('unbind @6')
-	send_command('unbind @7')
-end
-
 
 -- Define sets and vars used by this job file.
 function init_gear_sets()
@@ -456,7 +372,7 @@ function init_gear_sets()
 	sets.idle.Field.DT = set_combine(sets.idle, 
 		{head='Nyame Helm', body='Nyame Mail', hands='Nyame Gauntlets', legs='Nyame Flanchard', feet='Nyame Sollerets',
 		lring='Defending Ring', rring='Moonbeam Ring'})
-	sets.idle.Field.MixDT = set_combine(sets.idle, { })	
+
 	sets.idle.Field.PetDT = set_combine(sets.idle.Field.DT, { })	--If we were in pet DT gear and the pet dies, sub in master DT
 
 	sets.idle.Field.Pet = set_combine(sets.idle,{})
@@ -521,183 +437,239 @@ function init_gear_sets()
 	
 	sets.engaged.DT = set_combine(sets.engaged,{neck='Loricate Torque', body='Malignance Tabard'})
 	sets.engaged.PetDT = {}
-	sets.engaged.MixDT = {}
-
-
-	-----------------------------------------------NINJA SUB----------------------------------------------------
-
-	--0% haste | max dual wield (49 DW) [51/hit]
-	sets.engaged.NIN = set_combine(sets.engaged,{ 
-		 neck='Beastmaster Collar +2', lear='Suppanomimi', rear='Eabani Earring',
+	
+	-------------------------------------------------------------------------------------------------------------------------
+													--Dual Wield Sets
+	-------------------------------------------------------------------------------------------------------------------------
+	
+	--Base set. Leave blank.
+	sets.engaged.DW = {}
+	
+	--/DNC 0% haste | /DNC 0% haste + samba
+	sets.engaged.DW[59] = set_combine(sets.engaged,{ 
+		 head=Taeon.Head.DW, neck='Beastmaster Collar +2', lear='Suppanomimi', rear='Eabani Earring',
 		 body=Taeon.Body.DW, hands=Emicho.Hands.DW, 
 		 back=Artio.DW, waist='Reiki Yotai', legs=Taeon.Legs.DW, feet=Taeon.Feet.DW})
-		 
-	sets.engaged.NIN.DT = set_combine(sets.engaged.NIN, {neck='Loricate Torque', body='Malignance Tabard'})
-	sets.engaged.NIN.MixDT  = {}
-	sets.engaged.NIN.PetDT = {}
 	
-	--10% haste | single advancing march from trusts (45 DW) [58/hit]
-	sets.engaged.NIN['10'] = set_combine(sets.engaged.NIN,{neck="Anu Torque", body="Gleti's Cuirass"})
-	sets.engaged.NIN['10'].DT = set_combine(sets.engaged.NIN['10'],
-		 {ammo='Staunch Tathlum', neck='Loricate Torque', lring='Defending Ring', rring='Moonbeam Ring'})	
-	sets.engaged.NIN['10'].MixDT  = {}	
-	sets.engaged.NIN['10'].PetDT = {}
-
-	--15% regular haste (42 DW) [62/hit]
-	sets.engaged.NIN['15'] = set_combine(sets.engaged,{ 
-		 lear='Suppanomimi',rear='Eabani Earring', hands=Emicho.Hands.DW, 
+	--/NIN 0% haste | /DNC 15% haste, no samba
+	sets.engaged.DW[49] = set_combine(sets.engaged.DW[59],{body="Malignance Tabard"})
+	
+	--/DNC 15% haste + samba | /DNC 25% haste, no samba
+	sets.engaged.DW[45] = set_combine(sets.engaged.DW[49],{head="Malignance Chapeau", neck="Anu Torque", body="Gleti's Cuirass"})
+	
+	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
+	sets.engaged.DW[42] = set_combine(sets.engaged,{ 
+		 lear='Suppanomimi',rear='Sherida Earring', hands=Emicho.Hands.DW, 
 		 back=Artio.DW, waist='Reiki Yotai', legs=Taeon.Legs.DW, feet=Taeon.Feet.DW})
-	sets.engaged.NIN['15'].DT = {}	
-	sets.engaged.NIN['15'].MixDT  = {}	
-	sets.engaged.NIN['15'].PetDT = {}
-	
-	--25% double march from trusts, zealous snort (~35 DW) [72/hit]
-	sets.engaged.NIN['25'] = set_combine(sets.engaged,{ 
+		 
+	--/NIN 25% haste | /DNC 30% haste + samba 
+	sets.engaged.DW[35] = set_combine(sets.engaged,{ 
 		 rear='Eabani Earring', hands=Emicho.Hands.DW, 
 		 back=Artio.DW, waist='Reiki Yotai', feet=Taeon.Feet.DW})
-	sets.engaged.NIN['25'].DT = {}	
-	sets.engaged.NIN['25'].MixDT  = {}	
-	sets.engaged.NIN['25'].PetDT = {}
-	
-	--30% haste 2 (31 DW) [76/hit]
-	sets.engaged.NIN['30'] = set_combine(sets.engaged,{ 
+		 
+	--/NIN 30% haste
+	sets.engaged.DW[31] = set_combine(sets.engaged,{ 
 		hands=Emicho.Hands.DW, back=Artio.DW, waist='Reiki Yotai', feet=Taeon.Feet.DW})
-	sets.engaged.NIN['30'].DT = {}	
-	sets.engaged.NIN['30'].MixDT  = {}	
-	sets.engaged.NIN['30'].PetDT = {}		
-	
-	--capped haste (11 DW) [97/hit]
-	sets.engaged.NIN['MAX'] = set_combine(sets.engaged,{rear='Eabani Earring', waist='Reiki Yotai'})
-	sets.engaged.NIN['MAX'].DT = {}	
-	sets.engaged.NIN['MAX'].MixDT = {}	
-	sets.engaged.NIN['MAX'].PetDT = {}	
-	
-    --capped haste + samba (0 DW) [116/hit] (not possible to get haset samba buff as /NIN)
-	-- sets.engaged.NIN['MAX+Samba'] = set_combine(sets.engaged,{})
-	-- sets.engaged.NIN['MAX+Samba'].DT = set_combine(sets.engaged.DT,{})
-	-- sets.engaged.NIN['MAX+Samba'].MixDT = set_combine(sets.engaged.MixDT,{})	
-	-- sets.engaged.NIN['MAX+Samba'].PetDT = set_combine(sets.engaged.PetDT,{})
-	
-	-----------------------------------------------DANCER SUB----------------------------------------------------
-
-	--0% haste | max dual wield (59 DW)
-	sets.engaged.DNC = {}
-	sets.engaged.DNC.DT = {}
-	sets.engaged.DNC.MixDT  = {}
-	sets.engaged.DNC.PetDT = {}
-	
-	--10% haste | single advancing march from trusts (55 DW)
-	sets.engaged.DNC['10'] = {}
-	sets.engaged.DNC['10'].DT = {}	
-	sets.engaged.DNC['10'].MixDT  = {}	
-	sets.engaged.DNC['10'].PetDT = {}
-	
-	--15% regular haste (52 DW)	
-	sets.engaged.DNC['15'] = {}
-	sets.engaged.DNC['15'].DT = {}	
-	sets.engaged.DNC['15'].MixDT  = {}	
-	sets.engaged.DNC['15'].PetDT = {}	
-	
-	--25% double march from trusts, zealous snort (~45 DW)
-	sets.engaged.DNC['25'] = {}
-	sets.engaged.DNC['25'].DT = {}	
-	sets.engaged.DNC['25'].MixDT  = {}	
-	sets.engaged.DNC['25'].PetDT = {}	
-	
-	--30% haste 2 (41 DW)
-	sets.engaged.DNC['30'] = {}
-	sets.engaged.DNC['30'].DT = {}	
-	sets.engaged.DNC['30'].MixDT  = {}	
-	sets.engaged.DNC['30'].PetDT = {}	
-	
-	--capped haste (21 DW)	
-	sets.engaged.DNC['MAX'] = set_combine(sets.engaged,{})
-	sets.engaged.DNC['MAX'].DT = {}	
-	sets.engaged.DNC['MAX'].MixDT = {}	
-	sets.engaged.DNC['MAX'].PetDT = {}
-	
-	--capped haste + Samba (9 DW)	
-	sets.engaged.DNC['MAX+Samba']= set_combine(sets.engaged,{})
-	sets.engaged.DNC['MAX+Samba'].DT = {}	
-	sets.engaged.DNC['MAX+Samba'].MixDT = {}	
-	sets.engaged.DNC['MAX+Samba'].PetDT = {}
-	
-	-------------------------------------------------- AM3 Sets (Aymur) -------------------------------------------------- 
 		
-	sets.engaged.AM3 = {}
-	sets.engaged.AM3.PetDT = {}		
-
-	--0% haste | max dual wield (49 DW)	
-	sets.engaged.NIN.AM3 = set_combine(sets.engaged.NIN,
+	--/DNC capped haste, no samba
+	sets.engaged.DW[21] = set_combine(sets.engaged.DW[31], {back=Artio.STP})
+	
+	--/NIN capped haste | /DNC capped haste + samba
+	sets.engaged.DW[11] = set_combine(sets.engaged,{rear='Eabani Earring', waist='Reiki Yotai'})
+	
+	
+	-------------------------------------------------------------------------------------------------------------------------
+											--Dual Wield + Damage Taken Sets
+	-------------------------------------------------------------------------------------------------------------------------	
+		
+	--/DNC no haste
+	sets.engaged.DW[59].DT = set_combine(sets.engaged.DW[59], 
+		{ammo='Staunch Tathlum', neck='Loricate Torque', lring='Defending Ring', rring='Moonbeam ring'})
+		
+	--/NIN no haste
+	sets.engaged.DW[49].DT = set_combine(sets.engaged.DW[49], 
+		{ammo='Staunch Tathlum', neck='Loricate Torque', lring='Defending Ring', rring='Moonbeam ring', body='Malignance Tabard'})
+		
+	--/DNC 15% haste + samba | /DNC 25% haste, no samba
+	sets.engaged.DW[45].DT = set_combine(sets.engaged.DW[59], {})
+	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
+	sets.engaged.DW[42].DT = set_combine(sets.engaged.DW[59], {})
+	--/NIN 25% haste | /DNC 30% haste + samba 
+	sets.engaged.DW[35].DT = set_combine(sets.engaged.DW[59], {})
+	--/NIN 30% haste
+	sets.engaged.DW[31].DT = set_combine(sets.engaged.DW[59], {})
+	--/DNC capped haste, no samba
+	sets.engaged.DW[21].DT = set_combine(sets.engaged.DW[59], {})
+	--/NIN capped haste
+	sets.engaged.DW[11].DT = set_combine(sets.engaged.DW[59], {})
+	
+	-------------------------------------------------------------------------------------------------------------------------
+												--Dual Wield + PetDT Sets
+	-------------------------------------------------------------------------------------------------------------------------
+	
+	--/DNC no haste
+	sets.engaged.DW[59].PetDT = {}	
+	--/NIN no haste | /DNC 15% haste, no samba
+	sets.engaged.DW[49].PetDT = {}
+	--/DNC 15% haste + samba | /DNC 25% haste, no samba
+	sets.engaged.DW[45].PetDT = {}
+	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
+	sets.engaged.DW[42].PetDT = {}
+	--/NIN 25% haste | /DNC 30% haste + samba 
+	sets.engaged.DW[35].PetDT = {}
+	--/NIN 30% haste
+	sets.engaged.DW[31].PetDT = {}
+	--/DNC capped haste, no samba
+	sets.engaged.DW[21].PetDT = {}
+	--/NIN capped haste
+	sets.engaged.DW[11].PetDT = {}
+	
+	-------------------------------------------------------------------------------------------------------------------------
+													--AM3 sets for Aymur
+	-------------------------------------------------------------------------------------------------------------------------
+	--/DNC no haste
+	sets.engaged.DW[59].AM3 = set_combine(sets.engaged.DW[59], 
 		{ammo='Aurgelmir Orb +1', 
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.NIN.AM3.PetDT = {}		
-	
-	--10% haste | single advancing march from trusts (45 DW)
-	sets.engaged.NIN['10'].AM3 = set_combine(sets.engaged.NIN['10'],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
-		rring={name='Chirich Ring +1', bag='wardrobe2'}, lring={name='Chirich Ring +1', bag='wardrobe3'}})
-	sets.engaged.NIN['10'].AM3.PetDT = {}
-
-	--15% regular haste (42 DW)
-	sets.engaged.NIN['15'].AM3 = set_combine(sets.engaged.NIN['15'],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
+	--/NIN no haste |/DNC 15% haste, no samba
+	sets.engaged.DW[49].AM3 = set_combine(sets.engaged.DW[49],
+		{ammo='Aurgelmir Orb +1', 
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.NIN['15'].AM3.PetDT = {}
-
-	--25% double march from trusts, zealous snort (~35 DW)	
-	sets.engaged.NIN['25'].AM3 = set_combine(sets.engaged.NIN['25'],
+	--/DNC 15% haste + samba | /DNC 25% haste, no samba
+	sets.engaged.DW[45].AM3 = set_combine(sets.engaged.DW[45],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
+		rring={name='Chirich Ring +1', bag='wardrobe2'}, lring={name='Chirich Ring +1', bag='wardrobe3'}})
+	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
+	sets.engaged.DW[42].AM3 = set_combine(sets.engaged.DW[42],{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
+		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
+	--/NIN 25% haste | /DNC 30% haste + samba 
+	sets.engaged.DW[35].AM3 = set_combine(sets.engaged.DW[35],
 		{ammo='Aurgelmir Orb +1', lear='Suppanomimi', body='Malignance Tabard', hands='Malignance Gloves',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.NIN['25'].AM3.PetDT = {}
-	
-	--30% haste 2 (31 DW)	
-	sets.engaged.NIN['30'].AM3 = set_combine(sets.engaged.NIN['30'],
+	--/NIN 30% haste
+	sets.engaged.DW[31].AM3 = set_combine(sets.engaged.DW[31],
 		{ammo='Aurgelmir Orb +1', rear='Eabani Earring', body='Malignance Tabard', hands='Malignance Gloves',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.NIN['30'].AM3.PetDT = {}
-
-	--capped haste (11 DW)	
-	sets.engaged.NIN['MAX'].AM3 = set_combine(sets.engaged.NIN['MAX'],
+	--/DNC capped haste, no samba
+	sets.engaged.DW[21].AM3 = set_combine(sets.engaged.DW[21], 
 		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.NIN['MAX'].AM3.PetDT = {}
-	
-    --capped haste + samba (0 DW)	
-	-- sets.engaged.NIN['MAX+Samba'].AM3 = set_combine(sets.engaged.NIN['MAX+Samba'],
-		-- {ammo='Aurgelmir Orb +1', body='Malignance Tabard',
-		-- rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	-- sets.engaged.NIN['MAX+Samba'].AM3.PetDT = {}
-	
-	--0% haste | max dual wield (59 DW)
-	sets.engaged.DNC.AM3 = {}
-	sets.engaged.DNC.AM3.PetDT = {}		
-	
-	--10% haste | single advancing march from trusts (55 DW)
-	sets.engaged.DNC['10'].AM3 = {}
-	sets.engaged.DNC['10'].AM3.PetDT = {}
-
-	--15% regular haste (52 DW)	
-	sets.engaged.DNC['15'].AM3 = {}
-	sets.engaged.DNC['15'].AM3.PetDT = {}
-
-	--25% double march from trusts, zealous snort (~45 DW)
-	sets.engaged.DNC['25'].AM3 = {}
-	sets.engaged.DNC['25'].AM3.PetDT = {}
-
-	--30% haste 2 (41 DW)
-	sets.engaged.DNC['30'].AM3 = {}
-	sets.engaged.DNC['30'].AM3.PetDT = {}
-
-	--capped haste (21 DW)	
-	sets.engaged.DNC['MAX'].AM3 = set_combine(sets.engaged.NIN['MAX'],
-		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
-		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})	
-	sets.engaged.DNC['MAX'].AM3.PetDT = {}	
-
-	--capped haste + Samba (9 DW)	
-	sets.engaged.DNC['MAX+Samba'].AM3 = set_combine(sets.engaged,
+	--/NIN capped haste
+	sets.engaged.DW[11].AM3 = set_combine(sets.engaged.DW[11],
 		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-	sets.engaged.DNC['MAX+Samba'].AM3.PetDT = {}	
+		
+	-------------------------------------------------------------------------------------------------------------------------
+													--AM3+PetDT Sets
+	-------------------------------------------------------------------------------------------------------------------------
+	
+	--/DNC no haste
+	sets.engaged.DW[59].AM3.PetDT = {}
+	--/NIN no haste | /DNC 15% haste, no samba
+	sets.engaged.DW[49].AM3.PetDT = {}
+	--/DNC 15% haste + samba | /DNC 25% haste, no samba
+	sets.engaged.DW[45].AM3.PetDT = {}
+	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
+	sets.engaged.DW[42].AM3.PetDT = {}
+	--/NIN 25% haste | /DNC 30% haste + samba 
+	sets.engaged.DW[35].AM3.PetDT = {}
+	--/NIN 30% haste
+	sets.engaged.DW[31].AM3.PetDT = {}
+	--/DNC capped haste, no samba
+	sets.engaged.DW[21].AM3.PetDT = {}
+	--/NIN capped haste
+	sets.engaged.DW[11].AM3.PetDT = {}
+	
 end
+
+--Mote/Kinematics luas sometimes screw up and overwrite your bindings on initial load
+--Set keybinds with a delay on setting them, no more than a few seconds.
+function set_keybinds(delay)
+	coroutine.schedule(function()
+		send_command('bind Home gs c update user')
+		send_command('bind ^End gs c cycle ShowUI')
+		send_command('bind End gs c cycle ShowUIHotkeys')
+		send_command('bind PageUp gs c SelectJug')
+		send_command('bind PageDown gs c cycle RewardItem')
+		send_command('bind ^PageDown gs c cycleback RewardItem')
+
+		send_command('bind f9 gs c cycle OffenseMode')
+		send_command('bind !f9 gs c cycle Haste')	
+		send_command('bind ^f9 gs c cycle Manual_Haste')	
+		
+		send_command('bind f10 gs c cycle DefenseMode')
+		send_command('bind !f10 gs c reset DefenseMode')
+		send_command('bind ^f10 gs c cycle ActiveDefenseMode')
+		
+		send_command('bind f11 gs c cycle Main')
+		send_command('bind ^f11 gs c cycle LockMain')
+		
+		send_command('bind f12 gs c cycle Sub')
+		send_command('bind ^f12 gs c cycle LockSub')	
+		send_command('bind !f12 gs c toggle Kiting')
+		
+		send_command('bind @1 bstpet 1')
+		send_command('bind @2 bstpet 2')
+		send_command('bind @3 bstpet 3')
+		send_command('bind @4 bstpet 4')
+		send_command('bind @5 bstpet 5')
+		send_command('bind @6 bstpet 6')
+		send_command('bind @7 bstpet 7')	
+	end, delay)
+end
+
+-- Called when this job file is unloaded (eg: job change)
+function file_unload()
+	send_command('unbind Home')
+	send_command('unbind End')
+	send_command('unbind ^End')
+	send_command('unbind PageDown')
+	send_command('unbind PageUp')
+	send_command('unbind ^PageDown')
+	send_command('unbind ^PageUp')
+
+	send_command('unbind f9')
+	send_command('unbind !f9')
+	send_command('unbind ^f9')
 	
+	send_command('unbind f10')
+	send_command('unbind ^f10')
+	send_command('unbind !f10')
 	
+	send_command('unbind f11')	
+	send_command('unbind ^f11')
+	send_command('unbind !f11')
+	
+	send_command('unbind f12')
+	send_command('unbind ^f12')
+	send_command('unbind !f12')
+	
+	send_command('unbind @1')
+	send_command('unbind @2')
+	send_command('unbind @3')
+	send_command('unbind @4')
+	send_command('unbind @5')
+	send_command('unbind @6')
+	send_command('unbind @7')
+end
+
+
+
+--DO NOT TOUCH! DO NOT TOUCH! DO NOT TOUCH! DO NOT TOUCH! DO NOT TOUCH! DO NOT TOUCH! 
+--I had to put this here because it lagged the game when it was in the library file
+--This function simply checks what the party composition is when it changes (party changes or zone etc)
+--Used for automatic haste mode toggling.
+--SERIOUSLY. DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING.
+gearswap.parse.i[0x0DD] = function(data)
+	local parsed = packets.parse("incoming", data)
+	local player_id = parsed['ID']
+	local name = parsed['Name']
+	local job = parsed['Main job']
+		
+	--if not a trust then add to the list with job
+	--if there is a trust that can cast Haste II add to the list as a RDM
+	if job > 0 then
+		party_setup[player_id] = res.jobs[job].english_short
+	elseif T{"Ygnas", "Arciela", "KingOfHearts", "Koru-Moru"}:contains(name) then
+		party_setup[player_id] = "RDM"
+	end
+end

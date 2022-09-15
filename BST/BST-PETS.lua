@@ -5,6 +5,15 @@
 				    If you want to add more, feel free. Let me know if there are any inaccuracies too.
 ========================================================================================================================]]--
 
+
+--[[ 
+	[Pet name]=T{
+		['Jug']=Jug Name,
+		['Charges']={[1]=Ready Ability #1 number of charges,[2]=Ready Ability #2 number of charges}, etc.
+		['Type']=Monster type, ['Family']=Monster Family}
+		
+	See below for numerous examples
+]]--
 Pets = T{		
 	['RhymingShizuna']=T{
 		['Jug']='Lyrical Broth',
@@ -206,6 +215,14 @@ Pets = T{
 		['Jug']='Wispy Broth',
 		['Charges']={},
 		['Type']='Aquan', ['Family']='Frog'},
+	['YellowBeetleFamiliar']= T{
+		['Jug']='Zestful Sap',
+		['Charges']={[1]=1,[2]=2,[3]=1,[4]=1,[5]=1},
+		['Type']='Vermin', ['Family']='Beetle'},
+	['EnergizedSefina']= T{
+		['Jug']='Gassy Sap',
+		['Charges']={[1]=1,[2]=2,[3]=1,[4]=1,[5]=1},
+		['Type']='Vermin', ['Family']='Beetle'},
 	['DapperMac'] = T{
 		['Jug']='Briny Broth',
 		['Charges']={[1]=2,[2]=1},
@@ -302,7 +319,8 @@ Jugs = S{'Alchemist Water', 'Carrot Broth', 'F. Carrot Broth', 'Famous Carrot Br
 		'Viscous Broth', 'Trans. Broth', 'Translucent Broth', 'Wetlands Broth', 'Heavenly Broth', 'Wispy Broth', 'Aged Humus', 
 		'Rancid Broth', 'Pungent Broth', 'Zestful Sap', 'Gassy Sap', 'Frizzante Broth', 'Spumante Broth', 'Turpid Broth', 'Feculent Broth',
 		'Decaying Broth', 'Putrescent Broth'}
-		
+
+--Used to get basic jug to pet info
 JugInfo = T{
 	['Airy Broth']='Amiable Roche',
 	['Aged Humus']='Sweet Caroline',
@@ -370,5 +388,27 @@ JugInfo = T{
 	['Svg. Mole Broth']='Bugeyed Broncha',
 	['Bur. Carrion Broth']='Gorefang Hobs',
 	['Cl. Wheat Broth']='Gooey Gerard',
-	['Shadowy Broth']='Crude Raphie'
+	['Shadowy Broth']='Crude Raphie',
+	['Zestful Sap']='Yellow Beetle Familiar',
+	['Gassy Sap']='Energized Sefina'
+}
+
+HQ_Jugs = T{
+	['Putrescent Broth']='Decaying Broth',
+	['Bug-Ridden Broth']='Electrified Broth',
+	['Spumante Broth']='Frizzane Broth',
+	['Tant. Broth']='Fizzy Broth',
+	['Deepwater Broth']='Insipid Broth',
+	['Venemous Broth']='Poisonous Broth',
+	['Truly Pristine Sap']='Pristine Sap',
+	['Pungent Broth']='Rancid Broth',
+	['Windy Greens']='Salubrious Broth',
+	['Ferm. Broth']='Shimmering Broth',
+	['Bubbly Broth']='Spicy Broth',
+	['Slimy Webbing']='Sticky Webbing',
+	['Glazed Broth']='Sugary Broth',
+	['Vis. Broth']='Swirling Broth',
+	['Feculent Broth']='Trupid Broth',
+	['Heavenly Broth']='Wetlands Broth',
+	['Gassy Sap']='Zestful Sap'
 }
