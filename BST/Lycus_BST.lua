@@ -475,7 +475,7 @@ function init_gear_sets()
 	sets.engaged.DW['21'] = set_combine(sets.engaged.DW['31'], {back=Artio.STP})
 	
 	--/NIN capped haste | /DNC capped haste + samba
-	sets.engaged.DW['11'] = set_combine(sets.engaged,{rear='Eabani Earring', waist='Reiki Yotai'})
+	sets.engaged.DW['11'] = set_combine(sets.engaged,{rear='Eabani Earring', waist='Reiki Yotai'})	
 	
 	
 	-------------------------------------------------------------------------------------------------------------------------
@@ -501,28 +501,9 @@ function init_gear_sets()
 	--/DNC capped haste, no samba
 	sets.engaged.DW['21'].DT = set_combine(sets.engaged.DW['59'], {})
 	--/NIN capped haste
-	sets.engaged.DW['11'].DT = set_combine(sets.engaged.DW['59'], {})
+	sets.engaged.DW['11'].DT = set_combine(sets.engaged.DW['59'], {})	
 	
-	-------------------------------------------------------------------------------------------------------------------------
-												--Dual Wield + PetDT Sets
-	-------------------------------------------------------------------------------------------------------------------------
-	
-	--/DNC no haste
-	sets.engaged.DW['59'].PetDT = {}	
-	--/NIN no haste | /DNC 15% haste, no samba
-	sets.engaged.DW['49'].PetDT = {}
-	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW['45'].PetDT = {}
-	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW['42'].PetDT = {}
-	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW['35'].PetDT = {}
-	--/NIN 30% haste
-	sets.engaged.DW['31'].PetDT = {}
-	--/DNC capped haste, no samba
-	sets.engaged.DW['21'].PetDT = {}
-	--/NIN capped haste
-	sets.engaged.DW['11'].PetDT = {}
+	sets.engaged.DW.PetDT = {body='udug jacket'}
 	
 	-------------------------------------------------------------------------------------------------------------------------
 													--AM3 sets for Aymur
@@ -557,27 +538,6 @@ function init_gear_sets()
 	sets.engaged.DW['11'].AM3 = set_combine(sets.engaged.DW['11'],
 		{ammo='Aurgelmir Orb +1', body='Malignance Tabard',
 		rring={name='Chirich Ring +1', bag='Wardrobe2'}, lring={name='Chirich Ring +1', bag='Wardrobe3'}})
-		
-	-------------------------------------------------------------------------------------------------------------------------
-													--AM3+PetDT Sets
-	-------------------------------------------------------------------------------------------------------------------------
-	
-	--/DNC no haste
-	sets.engaged.DW['59'].AM3.PetDT = {}
-	--/NIN no haste | /DNC 15% haste, no samba
-	sets.engaged.DW['49'].AM3.PetDT = {}
-	--/DNC 15% haste + samba | /DNC 25% haste, no samba
-	sets.engaged.DW['45'].AM3.PetDT = {}
-	--/NIN 15% haste | /DNC 25% haste + samba | /DNC 30% haste, no samba
-	sets.engaged.DW['42'].AM3.PetDT = {}
-	--/NIN 25% haste | /DNC 30% haste + samba 
-	sets.engaged.DW['35'].AM3.PetDT = {}
-	--/NIN 30% haste
-	sets.engaged.DW['31'].AM3.PetDT = {}
-	--/DNC capped haste, no samba
-	sets.engaged.DW['21'].AM3.PetDT = {}
-	--/NIN capped haste
-	sets.engaged.DW['11'].AM3.PetDT = {}
 	
 end
 

@@ -326,8 +326,15 @@ function get_combat_form()
 	classes.CustomIdleGroups:clear()
 	
 	check_haste()
-	classes.CustomMeleeGroups:append(state.DWHaste.value)
 	
+	if state.ActiveDefenseMode.value ~='PetDT' then		
+		classes.CustomMeleeGroups:append(state.DWHaste.value)		
+	else
+		if state.DefenseMode.value == 'None' then
+			classes.CustomMeleeGroups:append(state.DWHaste.value)
+		end
+	end
+
 	if state.DefenseMode.value ~= 'None' then	
 		classes.CustomMeleeGroups:append(state.ActiveDefenseMode.value)
 		classes.CustomIdleGroups:append(state.ActiveDefenseMode.value)
@@ -336,7 +343,6 @@ function get_combat_form()
 	if state.DefenseMode.value ~= 'DT' then
 		get_aftermath()
 	end
-	
 	
 end
 
